@@ -2,7 +2,8 @@
 Generate a svg qrcode from url and send the file to an email address.
 
 # Installation
-
+`sudo apt update`
+`sudo apt install qrencode mailutils ssmtp`
 `sudo mv qrcode-gen /usr/bin/qrcode-gen`
 `sudo chmod +x /usr/bin/qrcode-gen`
 
