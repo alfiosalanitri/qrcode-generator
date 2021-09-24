@@ -1,0 +1,101 @@
+#!/bin/bash
+#
+# NAME
+# 	qrcode-gen - generate an svg qrcode from an url and send an mail optionally
+#
+# SYNOPSIS
+#	qrcode www.example.com/ test@mail.ext
+#
+# INSTALLATION
+#	sudo mv qrcode-gen /usr/bin
+#	sudo chmod +x /usr/bin/qrcode-gen
+#
+# REQUIREMENTS
+#	- A debian linux distribution like Ubuntu
+#	- qrencode package: http://manpages.ubuntu.com/manpages/trusty/man1/qrencode.1.html
+#	- mailtuils package to send email (optional)
+#	- ssmtp to send email with external smtp server to prevent spam folder (optional)
+#
+# AUTHOR:
+#	qrcode-gen is written by Alfio Salanitri <www.alfiosalanitri.it> and are licensed under the terms of the GNU General Public License, version 2 or higher.
+#
+#
+#############################################################
+# Icons	and color
+# https://www.techpaste.com/2012/11/print-colored-text-background-shell-script-linux/
+# https://apps.timwhitlock.info/emoji/tables/unicode
+#############################################################
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[1;33m'
+nocolor='\033[0m'
+icon_ok='\xE2\x9C\x94'
+icon_ko='\xe2\x9c\x97'
+icon_wait='\xE2\x8C\x9B'
+icon_rocket='\xF0\x9F\x9A\x80'
+
+#############################################################
+# Functions				
+#############################################################
+# Check if an email address is valid
+is_email() {
+	if [[ ! "$1" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$ ]]; then    
+		printf "[${red}${icon_ko}${nocolor}] Email $1 is not a valid email address.\n"
+    		exit 1;
+	fi
+}
+
+#############################################################
+# Generate the qrcode					
+#############################################################
+if ! command -v qrencode &> /dev/null; then
+	printf "[${red}${icon_ko}${nocolor}] Sorry, but ${green}qrencode${nocolor} is required. Install it with apt install qrencode!\n"
+	exit 1;
+fi
+
+if [ ! "$1" ]; then
+    printf "[${red}${icon_ko}${nocolor}] Type the url to encode. Example: https://www.example.com\n"
+    exit 1;
+fi
+
+filename="$(echo $1 | awk -F[/:] '{print $4}' | sed -E 's/www\.//' | awk -F[/.] '{print $1}')-$(date +%d%m%Y-%H%M).svg"
+
+qrencode -t svg -o $filename "$1"
+
+printf "[${red}${icon_rocket}${nocolor}] svg file saved to current directory.\n"
+
+#############################################################
+# Send mail
+#############################################################
+echo ""
+printf "${yellow}${icon_wait}${nocolor} Do you want to send the qrcode to a friend?\n"
+echo ""
+ssl_support=''
+PS3="Type 1 or 2: "
+actions=("Yes" "No")
+select action in "${actions[@]}"; do
+	case $action in
+		"Yes")
+			if ! command -v mail &> /dev/null; then
+				printf "[${red}${icon_ko}${nocolor}] Sorry, but ${green}mailutils${nocolor} is required. Install it with apt install mailutils.\n"
+				exit 1;
+			fi
+			read -p "Type the destinatary email address: " to
+			to=${to}	
+			#validate email
+			is_email "$to"
+
+			#send
+			printf "[${green}${icon_wait}${nocolor}] Email sending! Wait...\n"
+			mail -s "qrcode $filename" -A $filename $to <<< "$USER."
+			printf "[${green}${icon_rocket}${nocolor}] Email sent with success. Bye!\n"
+			
+			break;;
+		"No")
+			printf "[${green}${icon_ok}${nocolor}] No email will be sent, send it manually.\n"
+			break;;
+		*) printf "${red}${icon_ko}${nocolor} $REPLY isn't a valid option. Try again\n";;
+	esac
+done
+
+exit 1;
