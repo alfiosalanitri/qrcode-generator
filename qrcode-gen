@@ -7,8 +7,8 @@
 #	qrcode www.example.com/ test@mail.ext
 #
 # INSTALLATION
-#	sudo mv qrcode-gen /usr/bin
-#	sudo chmod +x /usr/bin/qrcode-gen
+#	sudo mv qrcode-gen /usr/local/bin
+#	sudo chmod +x /usr/local/bin/qrcode-gen
 #
 # REQUIREMENTS
 #	- A debian linux distribution like Ubuntu
