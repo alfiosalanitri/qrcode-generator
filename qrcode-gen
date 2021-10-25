@@ -17,7 +17,7 @@
 #	- ssmtp to send email with external smtp server to prevent spam folder (optional)
 #
 # AUTHOR:
-#	qrcode-gen is written by Alfio Salanitri <www.alfiosalanitri.it> and are licensed under the terms of the GNU General Public License, version 2 or higher.
+#	qrcode-gen is written by Alfio Salanitri <www.alfiosalanitri.it> and are licensed under MIT license.
 #
 #
 #############################################################
