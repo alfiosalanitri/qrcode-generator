@@ -99,7 +99,7 @@ select action in "${actions[@]}"; do
 				case $action in 
 					"Yes")
 						rm $filename
-						printf "[${green}${icon_rocket}${nocolor}] File ($filename) deleted with success. Bye!\n"	
+						printf "[${green}${icon_rocket}${nocolor}] File: $filename, deleted with success. Bye!\n"	
 						break;;
 					"No")
 						printf "[${green}${icon_rocket}${nocolor}] Ok Bye!\n"
