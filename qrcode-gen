@@ -115,4 +115,4 @@ select action in "${actions[@]}"; do
 	esac
 done
 
-exit 1;
+exit 0
