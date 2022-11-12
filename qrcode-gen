@@ -17,7 +17,7 @@
 #	- ssmtp to send email with external smtp server to prevent spam folder (optional)
 #
 # AUTHOR:
-#	qrcode-gen is written by Alfio Salanitri <www.alfiosalanitri.it> and are licensed under the terms of the GNU General Public License, version 2 or higher.
+#	qrcode-gen is written by Alfio Salanitri <www.alfiosalanitri.it> and are licensed under MIT license.
 #
 #
 #############################################################
@@ -57,7 +57,6 @@ if [ ! "$1" ]; then
     printf "[${red}${icon_ko}${nocolor}] Type the url to encode. Example: https://www.example.com\n"
     exit 1;
 fi
-
 filename="$(echo $1 | awk -F[/:] '{print $4}' | sed -E 's/www\.//' | awk -F[/.] '{print $1}')-$(date +%d%m%Y-%H%M).svg"
 
 qrencode -t svg -o $filename "$1"
@@ -88,8 +87,26 @@ select action in "${actions[@]}"; do
 			#send
 			printf "[${green}${icon_wait}${nocolor}] Email sending! Wait...\n"
 			mail -s "qrcode $filename" -A $filename $to <<< "$USER."
-			printf "[${green}${icon_rocket}${nocolor}] Email sent with success. Bye!\n"
+			printf "[${green}${icon_rocket}${nocolor}] Email sent with success to: $to. Bye!\n"
 			
+			#delete or not the file
+			echo ""
+			printf "${yellow}${icon_wait}${nocolor} Do you want to delete the saved file?\n"
+			echo ""
+			PS3="Type 1 or 2: "
+			actions=("Yes" "No")
+			select action in "${actions[@]}"; do
+				case $action in 
+					"Yes")
+						rm $filename
+						printf "[${green}${icon_rocket}${nocolor}] File: $filename, deleted with success. Bye!\n"	
+						break;;
+					"No")
+						printf "[${green}${icon_rocket}${nocolor}] Ok Bye!\n"
+						break;;
+					*) printf "${red}${icon_ko}${nocolor} $REPLY isn't a valid option. Try again\n";;
+				esac
+			done
 			break;;
 		"No")
 			printf "[${green}${icon_ok}${nocolor}] No email will be sent, send it manually.\n"
@@ -97,5 +114,4 @@ select action in "${actions[@]}"; do
 		*) printf "${red}${icon_ko}${nocolor} $REPLY isn't a valid option. Try again\n";;
 	esac
 done
-
-exit 0;
+exit 0
