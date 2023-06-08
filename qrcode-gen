@@ -57,7 +57,7 @@ if [ ! "$1" ]; then
     printf "[${red}${icon_ko}${nocolor}] Type the url to encode. Example: https://www.example.com\n"
     exit 1;
 fi
-filename="$(echo $1 | awk -F[:] '{print $2}' | sed -E 's/\/\///;s/\//_/g;s/\./_/g' | awk -F[?] '{print $1}')_$(date +%d%m%Y_%H%M).svg"
+filename="$(echo $1 | awk -F[:] '{print $2}' | sed -E 's/\/\///;s/\//_/g;s/\./_/g;s/\-/_/g' | awk -F[?] '{print $1}')_$(date +%d%m%Y_%H%M).svg"
 
 qrencode -t svg -o $filename "$1"
 
